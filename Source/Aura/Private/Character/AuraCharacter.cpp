@@ -2,7 +2,9 @@
 
 #include "AbilitySystemComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Player/AuraPlayerController.h"
 #include "Player/AuraPlayerState.h"
+#include "UI/HUD/AuraHUD.h"
 
 AAuraCharacter::AAuraCharacter()
 {
@@ -23,11 +25,21 @@ UAbilitySystemComponent* AAuraCharacter::GetAbilitySystemComponent() const
 
 void AAuraCharacter::InitAbilityActorInfo()
 {
-	if (AAuraPlayerState* PS = GetPlayerState<AAuraPlayerState>())
+	AAuraPlayerState* PS = GetPlayerState<AAuraPlayerState>();
+	check(PS);
+	
+	AbilitySystemComponent = PS->GetAbilitySystemComponent();
+	AbilitySystemComponent->InitAbilityActorInfo(PS, this);
+	AttributeSet = PS->GetAttributeSet();
+
+	// This function is called for all players in a multiplayer game ( because Player State 
+	// is replicated to all clients ).  However, Player Controller will be null for remote players
+	if (AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController()))
 	{
-		AbilitySystemComponent = PS->GetAbilitySystemComponent();
-		AbilitySystemComponent->InitAbilityActorInfo(PS, this);
-		AttributeSet = PS->GetAttributeSet();
+		if (AAuraHUD* AuraHUD = Cast<AAuraHUD>(AuraPlayerController->GetHUD()))
+		{
+			AuraHUD->InitOverlay(AuraPlayerController, PS, AbilitySystemComponent, AttributeSet);	
+		}
 	}
 }
 
