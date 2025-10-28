@@ -1,6 +1,44 @@
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "GameplayEffectExtension.h"
+#include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"
+
+FEffectProperties::FEffectProperties(const FGameplayEffectModCallbackData& Data)
+{
+	EffectContextHandle = Data.EffectSpec.GetContext();
+
+	SourceASC = EffectContextHandle.GetOriginalInstigatorAbilitySystemComponent();
+
+	if (IsValid(SourceASC))
+	{
+		SourceAvatarActor = SourceASC->GetAvatarActor();
+
+		if (SourceAvatarActor)
+		{
+			if (ACharacter* Character = Cast<ACharacter>(SourceAvatarActor))
+			{
+				SourceCharacter = Character;
+				SourceController = Character->GetController();
+			}
+		}
+	}
+
+	TargetASC = &Data.Target;
+
+	if (IsValid(TargetASC))
+	{
+		TargetAvatarActor = TargetASC->GetAvatarActor();
+
+		if (TargetAvatarActor)
+		{
+			if (ACharacter* Character = Cast<ACharacter>(TargetAvatarActor))
+			{
+				TargetCharacter = Character;
+				TargetController = Character->GetController();
+			}
+		}
+	}
+}
 
 UAuraAttributeSet::UAuraAttributeSet()
 {
@@ -39,8 +77,7 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 {
 	Super::PostGameplayEffectExecute(Data);
 
-	FGameplayEffectContextHandle EffectContextHandle = Data.EffectSpec.GetContext();
-	
+	FEffectProperties EffectProperties(Data);
 }
 
 void UAuraAttributeSet::OnRep_Health(const FGameplayAttributeData& OldValue) const
