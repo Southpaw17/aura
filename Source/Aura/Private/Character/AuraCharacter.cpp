@@ -44,6 +44,8 @@ void AAuraCharacter::InitAbilityActorInfo()
 	}
 
 	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
+
+	InitializeDefaultAttributes();
 }
 
 void AAuraCharacter::OnRep_PlayerState()

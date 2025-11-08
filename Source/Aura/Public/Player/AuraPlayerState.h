@@ -23,7 +23,7 @@ public:
 
 
 protected:
-	UPROPERTY(BlueprintReadOnly, Category="GameplayAbilities")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="GameplayAbilities")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
 	UPROPERTY(BlueprintReadOnly, Category="GameplayAbilities")
