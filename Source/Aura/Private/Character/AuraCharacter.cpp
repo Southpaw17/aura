@@ -19,6 +19,14 @@ AAuraCharacter::AAuraCharacter()
 	bUseControllerRotationYaw = false;
 }
 
+int32 AAuraCharacter::GetCharacterLevel() const
+{
+	const AAuraPlayerState* PS = GetPlayerState<AAuraPlayerState>();
+	check(PS);
+	
+	return PS->GetCharacterLevel();
+}
+
 UAbilitySystemComponent* AAuraCharacter::GetAbilitySystemComponent() const
 {
 	return GetPlayerState<AAuraPlayerState>()->GetAbilitySystemComponent();

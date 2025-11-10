@@ -12,6 +12,10 @@ class AURA_API AAuraCharacter : public AAuraCharacterBase
 public:
 	AAuraCharacter();
 
+	// --- Combat Interface ----------------------------------------------------
+	virtual int32 GetCharacterLevel() const override;
+
+	// --- Ability System Interface --------------------------------------------
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	virtual void OnRep_PlayerState() override;
