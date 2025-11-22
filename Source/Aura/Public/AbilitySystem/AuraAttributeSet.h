@@ -150,7 +150,7 @@ public:
 	UFUNCTION()
 	void OnRep_HealthMax(const FGameplayAttributeData& OldValue) const;
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ManaMax, Category = "Attributes|Vital")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ManaMax, Category = "Attributes|Secondary")
 	FGameplayAttributeData ManaMax;
 	ATTRIBUTE_ACCESSORS_BASIC(UAuraAttributeSet, ManaMax);
 
