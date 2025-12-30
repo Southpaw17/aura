@@ -56,6 +56,9 @@ public:
 
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+	
+	/* FGameplayAttribute(*)() is the syntax for a function pointer for a function () -> FGameplayAttribute */
+	TMap<FGameplayTag, FGameplayAttribute(*)()> TagsToAttributes;
 
 	// --- Primary Attributes --------------------------------------------------
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Strength, Category = "Attributes|Primary")
