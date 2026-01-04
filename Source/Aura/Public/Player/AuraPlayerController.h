@@ -1,7 +1,7 @@
-﻿
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "InputActionValue.h"
 #include "GameFramework/PlayerController.h"
 #include "AuraPlayerController.generated.h"
@@ -9,6 +9,9 @@
 class IInteractableInterface;
 class UInputAction;
 class UInputMappingContext;
+class UAuraInputConfig;
+class UAuraAbilitySystemComponent;
+class USplineComponent;
 
 UCLASS()
 class AURA_API AAuraPlayerController : public APlayerController
@@ -33,6 +36,39 @@ private:
 	void Move(const FInputActionValue& InputActionValue);
 
 	void CursorTrace();
+
 	TScriptInterface<IInteractableInterface> LastActor;
 	TScriptInterface<IInteractableInterface> ThisActor;
+	FHitResult CursorHit;
+
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TObjectPtr<UAuraInputConfig> InputConfig;
+
+	UFUNCTION()
+	void AbilityInputTagPressed(FGameplayTag InputTag);
+
+	UFUNCTION()
+	void AbilityInputTagReleased(FGameplayTag InputTag);
+
+	UFUNCTION()
+	void AbilityInputTagHeld(FGameplayTag InputTag);
+
+	UPROPERTY()
+	TObjectPtr<UAuraAbilitySystemComponent> AuraAbilitySystemComponent;
+
+	UAuraAbilitySystemComponent* GetASC();
+
+	FVector CachedDestination = FVector::ZeroVector;
+	float   FollowTime = 0.f;
+	float   ShortPressThresholdSecs = 0.5f;
+	bool    bAutoRunning = false;
+	bool    bTargeting = false;
+
+	UPROPERTY(EditDefaultsOnly)
+	float AutoRunAcceptanceRadius = 50.f;
+
+	UPROPERTY()
+	TObjectPtr<USplineComponent> SplineComponent;
+
+	void AutoRun();
 };

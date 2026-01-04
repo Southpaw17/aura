@@ -31,4 +31,12 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	// --- Vital Attribute Tags ------------------------------------------------
 	Instance.Attributes_Vital_Health =					Manager.AddNativeGameplayTag(FName("Attributes.Vital.Health"), FString(""));
 	Instance.Attributes_Vital_Mana =					Manager.AddNativeGameplayTag(FName("Attributes.Vital.Mana"), FString(""));
+	
+	// --- Input Tags ----------------------------------------------------------
+	Instance.InputTag_LMB = Manager.AddNativeGameplayTag(FName("InputTag.LMB"), FString(""));
+	Instance.InputTag_RMB = Manager.AddNativeGameplayTag(FName("InputTag.RMB"), FString(""));
+	Instance.InputTag_1 = Manager.AddNativeGameplayTag(FName("InputTag.1"), FString(""));
+	Instance.InputTag_2 = Manager.AddNativeGameplayTag(FName("InputTag.2"), FString(""));
+	Instance.InputTag_3 = Manager.AddNativeGameplayTag(FName("InputTag.3"), FString(""));
+	Instance.InputTag_4 = Manager.AddNativeGameplayTag(FName("InputTag.4"), FString(""));
 }

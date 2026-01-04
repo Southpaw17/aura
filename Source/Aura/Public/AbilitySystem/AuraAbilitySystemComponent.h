@@ -15,11 +15,16 @@ class AURA_API UAuraAbilitySystemComponent : public UAbilitySystemComponent
 
 public:
 	void AbilityActorInfoSet();
+	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& AbilitiesToGrant);
+	
+	void AbilityInputTagHeld(const FGameplayTag& InputTag);
+	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 
 	FEffectAssetTags EffectAssetTags;
 
 protected:
-	void OnEffectApplied(UAbilitySystemComponent* ASC, const FGameplayEffectSpec& Spec, const FActiveGameplayEffectHandle Handle);
+	UFUNCTION(Client, Reliable)
+	void ClientOnEffectApplied(UAbilitySystemComponent* ASC, const FGameplayEffectSpec& Spec, const FActiveGameplayEffectHandle Handle);
 
 	
 };

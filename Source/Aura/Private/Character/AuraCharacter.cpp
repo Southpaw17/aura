@@ -70,4 +70,5 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 
 	// Set up ASC for the Server
 	InitAbilityActorInfo();
+	AddCharacterAbilities();
 }
