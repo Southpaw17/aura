@@ -54,7 +54,8 @@ void AAuraPlayerController::SetupInputComponent()
 	UAuraInputComponent* AuraInputComponent = CastChecked<UAuraInputComponent>(InputComponent);
 
 	AuraInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAuraPlayerController::Move);
-
+	AuraInputComponent->BindAction(ShiftAction, ETriggerEvent::Started, this, &AAuraPlayerController::ShiftPressed);
+	AuraInputComponent->BindAction(ShiftAction, ETriggerEvent::Completed, this, &AAuraPlayerController::ShiftReleased);
 	AuraInputComponent->BindAbilityActions(InputConfig, this,
 	                                       &ThisClass::AbilityInputTagPressed,
 	                                       &ThisClass::AbilityInputTagReleased,
@@ -109,15 +110,18 @@ void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 
 void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
-	// If Released Input is not LMB, or if the player was targeting something, then end the Ability.
-	if (!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB) || bTargeting)
-	{
-		UAuraAbilitySystemComponent* ASC = GetASC();
-		if (!ASC) return;
+	UAuraAbilitySystemComponent* ASC = GetASC();
+	if (!ASC) return;
 
-		ASC->AbilityInputTagReleased(InputTag);
+	ASC->AbilityInputTagReleased(InputTag);
+
+	// If Released Input is not LMB, or if the player was targeting something, then end the Ability.
+	if (!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
+	{
 		return;
 	}
+
+	if (bTargeting || bShiftPressed) { return; }
 
 	// Otherwise, user clicked to move
 	if (const APawn* ControlledPawn = GetPawn(); FollowTime <= ShortPressThresholdSecs && ControlledPawn)
@@ -130,12 +134,12 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 			{
 				SplineComponent->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
 			}
-			
+
 			if (NavPath->PathPoints.Num() > 0)
 			{
 				CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
 			}
-			
+
 			bAutoRunning = true;
 		}
 	}
@@ -147,7 +151,7 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
 	// Try Activating Ability if Input is not LMB or, if Input is LMB, if we are hovering over a targetable object
-	if (!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB) || bTargeting)
+	if (!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB) || bTargeting || bShiftPressed)
 	{
 		UAuraAbilitySystemComponent* ASC = GetASC();
 		if (!ASC) return;
