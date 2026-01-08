@@ -4,6 +4,7 @@
 #include "Character/AuraCharacterBase.h"
 #include "Interaction/InteractableInterface.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
+#include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "AuraEnemy.generated.h"
 
 class UWidgetComponent;
@@ -25,19 +26,23 @@ public:
 
 	// -------------------------------------------------------------------------
 	virtual void BeginPlay() override;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TObjectPtr<UWidgetComponent> HealthWidget;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnHealthChanged;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnHealthMaxChanged;
 
 protected:
 	virtual void InitAbilityActorInfo() override;
-	
+	virtual void InitializeDefaultAttributes() const override;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
 	int32 Level = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
+	ECharacterClass CharacterClass = ECharacterClass::Warrior;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<UWidgetComponent> HealthWidget;
 };
