@@ -39,4 +39,8 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	Instance.InputTag_2 = Manager.AddNativeGameplayTag(FName("InputTag.2"), FString(""));
 	Instance.InputTag_3 = Manager.AddNativeGameplayTag(FName("InputTag.3"), FString(""));
 	Instance.InputTag_4 = Manager.AddNativeGameplayTag(FName("InputTag.4"), FString(""));
+	
+	// --- Gameplay Effect Tags ------------------------------------------------
+	Instance.IncomingDamage = Manager.AddNativeGameplayTag(FName("GameplayEffects.IncomingDamage"), FString(""));
+	Instance.Effects_HitReact = Manager.AddNativeGameplayTag(FName("Effects.HitReact"), FString(""));
 }

@@ -28,6 +28,8 @@ public:
 	// --- Combat Interface ----------------------------------------------------
 	virtual int32 GetCharacterLevel() const override;
 	
+	virtual void Die() override {};
+	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="GameplayAbilities")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;

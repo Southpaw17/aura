@@ -45,14 +45,13 @@ FWidgetControllerParams UAuraAbilitySystemLibrary::CreateWidgetControllerParams(
 
 void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* WorldContextObject, ECharacterClass CharacterClass, UAbilitySystemComponent* ASC, float Level)
 {
-	AAuraGameModeBase* GameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
 	
-	if (!GameMode)
+	if (!CharacterClassInfo)
 	{
 		return;
 	}
-
-	UCharacterClassInfo* CharacterClassInfo = GameMode->CharacterClassInfo;
+	
 	FCharacterClassDefaultInfo ClassDefaultInfo = CharacterClassInfo->GetClassDefaultInfo(CharacterClass);
 	
 	ApplyGameplayEffectToActor(ASC, ClassDefaultInfo.PrimaryAttributes, Level);
@@ -60,8 +59,36 @@ void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* World
 	ApplyGameplayEffectToActor(ASC, CharacterClassInfo->VitalAttributes, Level);
 }
 
+void UAuraAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC)
+{
+	UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
+	
+	if (!CharacterClassInfo)
+	{
+		return;
+	}
+	
+	for (const TSubclassOf<UGameplayAbility>& AbilityToGrant : CharacterClassInfo->CommonAbilities)
+	{
+		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityToGrant, 1);
+		ASC->GiveAbility(AbilitySpec);
+	}
+}
+
+UCharacterClassInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContextObject)
+{
+	AAuraGameModeBase* GameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	
+	if (!GameMode)
+	{
+		return nullptr;
+	}
+
+	return GameMode->CharacterClassInfo;
+}
+
 void UAuraAbilitySystemLibrary::ApplyGameplayEffectToActor(UAbilitySystemComponent* ASC,
-	TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level)
+                                                           TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level)
 {
 	AActor* AvatarActor = ASC->GetAvatarActor();
 	

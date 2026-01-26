@@ -1,10 +1,12 @@
 ﻿#include "Character/AuraEnemy.h"
 
+#include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "Aura/Aura.h"
 #include "Components/WidgetComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "UI/Widget/AuraUserWidget.h"
 
 
@@ -15,9 +17,9 @@ AAuraEnemy::AAuraEnemy()
 	AbilitySystemComponent = CreateDefaultSubobject<UAuraAbilitySystemComponent>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
-	
+
 	AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>("AttributeSet");
-	
+
 	HealthWidget = CreateDefaultSubobject<UWidgetComponent>("HealthWidget");
 	HealthWidget->SetupAttachment(GetRootComponent());
 }
@@ -44,28 +46,49 @@ int32 AAuraEnemy::GetCharacterLevel() const
 void AAuraEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 
 	InitAbilityActorInfo();
-	
+	UAuraAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
+
 	UAuraUserWidget* AuraUserWidget = Cast<UAuraUserWidget>(HealthWidget->GetUserWidgetObject());
 	if (AuraUserWidget)
 	{
 		AuraUserWidget->SetWidgetController(this);
 	}
-	
+
 	const UAuraAttributeSet* AuraAS = CastChecked<UAuraAttributeSet>(AttributeSet);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAS->GetHealthAttribute()).AddLambda([this](const FOnAttributeChangeData& Data)
-	{
-		OnHealthChanged.Broadcast(Data.NewValue);
-	});
-	
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAS->GetHealthMaxAttribute()).AddLambda([this](const FOnAttributeChangeData& Data)
-	{
-		OnHealthMaxChanged.Broadcast(Data.NewValue);
-	});
-	
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAS->GetHealthAttribute()).AddLambda(
+		[this](const FOnAttributeChangeData& Data)
+		{
+			OnHealthChanged.Broadcast(Data.NewValue);
+		});
+
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAS->GetHealthMaxAttribute()).AddLambda(
+		[this](const FOnAttributeChangeData& Data)
+		{
+			OnHealthMaxChanged.Broadcast(Data.NewValue);
+		});
+
+	FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
+	AbilitySystemComponent->RegisterGameplayTagEvent(GameplayTags.Effects_HitReact).AddUObject(
+		this, &AAuraEnemy::HitReactTagChanged);
+
 	OnHealthChanged.Broadcast(AuraAS->GetHealth());
 	OnHealthMaxChanged.Broadcast(AuraAS->GetHealthMax());
+}
+
+void AAuraEnemy::Die()
+{
+	SetLifeSpan(LifeSpan);
+	Super::Die();
+}
+
+void AAuraEnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	bHitReacting = NewCount > 0;
+
+	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
 }
 
 void AAuraEnemy::InitAbilityActorInfo()

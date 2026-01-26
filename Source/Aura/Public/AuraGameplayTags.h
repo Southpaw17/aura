@@ -47,12 +47,12 @@ public:
 	FGameplayTag InputTag_3;
 	FGameplayTag InputTag_4;
 	
+	// --- Gameplay Effect Tags ------------------------------------------------
+	FGameplayTag IncomingDamage;
+	FGameplayTag Effects_HitReact;
+	
 private:
 	FAuraGameplayTags() = default;
-	FAuraGameplayTags(const FAuraGameplayTags&) = delete;
-	FAuraGameplayTags(FAuraGameplayTags&&) = delete;
-	FAuraGameplayTags& operator=(const FAuraGameplayTags&) = delete;
-	FAuraGameplayTags& operator=(FAuraGameplayTags&&) = delete;
 	
 	static FAuraGameplayTags Instance;
 };
