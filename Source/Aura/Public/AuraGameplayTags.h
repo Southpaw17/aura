@@ -34,6 +34,12 @@ public:
 	FGameplayTag Attributes_Secondary_ManaRegeneration;
 	FGameplayTag Attributes_Secondary_HealthMax;
 	FGameplayTag Attributes_Secondary_ManaMax;
+	
+	// --- Damage Resistance ---------------------------------------------------
+	FGameplayTag Attributes_Resistance_Fire;
+	FGameplayTag Attributes_Resistance_Lightning;
+	FGameplayTag Attributes_Resistance_Arcane;
+	FGameplayTag Attributes_Resistance_Physical;
 
 	// --- Vital Attribute Tags ------------------------------------------------
 	FGameplayTag Attributes_Vital_Health;
@@ -50,6 +56,14 @@ public:
 	// --- Gameplay Effect Tags ------------------------------------------------
 	FGameplayTag IncomingDamage;
 	FGameplayTag Effects_HitReact;
+	
+	// --- Damage Types --------------------------------------------------------
+	FGameplayTag Damage_Fire;
+	FGameplayTag Damage_Lightning;
+	FGameplayTag Damage_Arcane;
+	FGameplayTag Damage_Physical;
+	
+	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistance;
 	
 private:
 	FAuraGameplayTags() = default;
