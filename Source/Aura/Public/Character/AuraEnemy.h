@@ -8,6 +8,8 @@
 #include "AuraEnemy.generated.h"
 
 class UWidgetComponent;
+class UBehaviorTree;
+class AAuraAIController;
 
 UCLASS()
 class AURA_API AAuraEnemy : public AAuraCharacterBase, public IInteractableInterface
@@ -16,6 +18,8 @@ class AURA_API AAuraEnemy : public AAuraCharacterBase, public IInteractableInter
 
 public:
 	AAuraEnemy();
+	
+	virtual void PossessedBy(AController* NewController) override;
 
 	// --- Interactable Interface ----------------------------------------------
 	virtual void HighlightActor() override;
@@ -58,4 +62,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UWidgetComponent> HealthWidget;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	TObjectPtr<UBehaviorTree> BehaviorTree;
+	
+	UPROPERTY()
+	TObjectPtr<AAuraAIController> AuraAIController;
 };
