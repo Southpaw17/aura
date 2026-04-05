@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -23,14 +22,21 @@ public:
 
 	// --- Ability System Interface --------------------------------------------
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
-	
-	virtual UAnimMontage* GetHitReactMontage_Implementation() const override; 
-	
-	virtual void Die() override;
-	
+	UAttributeSet*                   GetAttributeSet() const { return AttributeSet; }
+
+	virtual UAnimMontage* GetHitReactMontage_Implementation() const override;
+
+	virtual void                   Die() override;
+	virtual FVector                GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag) const override;
+	virtual bool                   IsDead_Implementation() const override;
+	virtual AActor*                GetAvatar_Implementation() override;
+	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
+
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TArray<FTaggedMontage> AttackMontages;
 
 protected:
 	virtual void BeginPlay() override;
@@ -39,11 +45,15 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
-	
+
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName WeaponTipSocketName;
 	
-	virtual FVector GetCombatSocketLocation() const override;
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	FName RightHandSocketName;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	FName LeftHandSocketName;
 
 	UPROPERTY(BlueprintReadOnly, Category="GameplayAbilities")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
@@ -63,28 +73,30 @@ protected:
 	virtual void InitializeDefaultAttributes() const;
 
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level = 1.f) const;
-	
+
 	void AddCharacterAbilities();
-	
+
 	// --- Dissolve Effects ----------------------------------------------------
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UMaterialInstance> DissolveMaterialInstance;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UMaterialInstance> WeaponDissolveMaterialInstance;
-	
+
 	void Dissolve();
-	
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void StartDissolveTimeline(UMaterialInstanceDynamic* DynamicMaterialInstance);
-	
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void StartWeaponDissolveTimeline(UMaterialInstanceDynamic* DynamicMaterialInstance);
-	
+
+	bool bDead = false;
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "GameplayAbilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
-	
+
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 	TObjectPtr<UAnimMontage> HitReactMontage;
 };
